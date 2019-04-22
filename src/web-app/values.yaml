@@ -1,0 +1,11 @@
+env: []
+extra_configs: {}
+health:
+  grace: 3
+  interval: 3
+  timeout: 1
+image: {}
+public: false
+resources:
+  requests: {}
+  limits: {}

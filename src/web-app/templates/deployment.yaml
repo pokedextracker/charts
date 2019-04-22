@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+{{- include "helpers.metadata" . | indent 2 }}
+spec:
+  selector:
+    matchLabels:
+{{- include "helpers.labels" . | indent 6 }}
+  template:
+    metadata:
+{{- include "helpers.metadata" . | indent 6 }}
+    spec:
+      containers:
+      - name: http
+        image: {{ required "image.repo is required" .Values.image.repo }}:{{ required "image.tag is required" .Values.image.tag }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.port }}
+        env:
+        - name: "VERSION"
+          value: {{ required "image.tag is required" .Values.image.tag | quote }}
+        - name: "STATSD_HOST"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+{{- range .Values.env }}
+        - name: {{ .name | quote }}
+{{- if .value }}
+          value: {{ .value }}
+{{- end }}
+{{- if .secret }}
+          valueFrom:
+            secretKeyRef:
+{{- range $key, $val := .secret }}
+              {{ $key }}: {{ $val }}
+{{- end }}
+{{- end }}
+{{- end }}
+        resources:
+          requests:
+            memory: {{ required "resources.requests.memory is required" .Values.resources.requests.memory | quote }}
+            cpu: {{ required "resources.requests.cpu is required" .Values.resources.requests.cpu | quote }}
+{{- if .Values.resources.limits }}
+          limits:
+            memory: {{ .Values.resources.limits.memory | quote }}
+            cpu: {{ .Values.resources.limits.cpu | quote }}
+{{- end }}
+        livenessProbe:
+          httpGet:
+            path: {{ required "health.path is required" .Values.health.path | quote }}
+            port: http
+          initialDelaySeconds: {{ .Values.health.grace }}
+          periodSeconds: {{ .Values.health.interval }}
+          timeoutSeconds: {{ .Values.health.timeout }}
+        readinessProbe:
+          httpGet:
+            path: {{ required "health.path is required" .Values.health.path | quote }}
+            port: http
+          initialDelaySeconds: {{ .Values.health.grace }}
+          periodSeconds: {{ .Values.health.interval }}
+          timeoutSeconds: {{ .Values.health.timeout }}

@@ -1,0 +1,9 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+{{- include "helpers.metadata" . | indent 2 }}
+spec:
+  minAvailable: 50%
+  selector:
+    matchLabels:
+      app: {{ .Values.name | quote }}

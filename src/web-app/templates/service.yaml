@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{- include "helpers.metadata" . | indent 2 }}
+spec:
+  type: ClusterIP
+  selector:
+{{- include "helpers.labels" . | indent 4 }}
+  ports:
+  - name: http
+    port: 80
+    targetPort: {{ required "port is required" .Values.port }}
