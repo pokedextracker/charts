@@ -14,12 +14,12 @@ endif
 	helm package src/$(chart)
 	helm repo index . --url https://pokedextracker.github.com/charts
 ifndef DRY_RUN
-	git add src/$(chart)/Chart.yaml $(chart)-$(version).tgz
+	git add index.yaml src/$(chart)/Chart.yaml $(chart)-$(version).tgz
 	git commit -m 'release($(chart)): create v$(version)'
 	git push origin master
 else
 	@echo "---> Would've run the following:"
-	@echo "---> git add src/$(chart)/Chart.yaml $(chart)-$(version).tgz"
+	@echo "---> git add index.yaml src/$(chart)/Chart.yaml $(chart)-$(version).tgz"
 	@echo "---> git commit -m 'release($(chart)): create v$(version)'"
 	@echo "---> git push origin master"
 endif
