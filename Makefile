@@ -12,7 +12,7 @@ endif
 	sed -i "" "s/version: .*/version: $(version)/" src/$(chart)/Chart.yaml
 	sed -i "" "s/appVersion: .*/appVersion: $(version)/" src/$(chart)/Chart.yaml
 	helm package src/$(chart)
-	helm repo index . --url https://pokedextracker.github.com/charts
+	helm repo index . --url https://pokedextracker.github.io/charts
 ifndef DRY_RUN
 	git add index.yaml src/$(chart)/Chart.yaml $(chart)-$(version).tgz
 	git commit -m 'release($(chart)): create v$(version)'
