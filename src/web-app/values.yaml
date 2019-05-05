@@ -1,5 +1,5 @@
 env: []
-extra_configs: {}
+extra_configs:
 health:
   grace: 3
   interval: 3
