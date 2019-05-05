@@ -1,7 +1,6 @@
 {{- define "helpers.labels" }}
 app: {{ required "name is required" .Values.name | quote }}
 release: {{ .Release.Name | quote }}
-chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 {{- end }}
 
 {{- define "helpers.metadata" }}
