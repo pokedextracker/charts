@@ -1,0 +1,103 @@
+{{- $root := . -}}
+{{- range $processName, $process := .Values.processes }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ required "root name is required" $root.Values.name }}-{{ required "process name is required" $processName }}
+  labels:
+    app: {{ required "root name is required" $root.Values.name | quote }}
+    process: {{ required "process name is required" $processName | quote }}
+    release: {{ $root.Release.Name | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ required "root name is required" $root.Values.name | quote }}
+      process: {{ required "process name is required" $processName | quote }}
+      release: {{ $root.Release.Name | quote }}
+  template:
+    metadata:
+      name: {{ required "root name is required" $root.Values.name }}-{{ required "process name is required" $processName }}
+      labels:
+        app: {{ required "root name is required" $root.Values.name | quote }}
+        process: {{ required "process name is required" $processName | quote }}
+        release: {{ $root.Release.Name | quote }}
+{{- if $process.metrics }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ $process.metrics.port | quote }}
+{{- end }}
+    spec:
+      containers:
+      - name: {{ $processName | quote }}
+        image: {{ required "image.repo is required" $process.image.repo }}:{{ required "image.tag is required" $process.image.tag }}
+{{- if $process.command }}
+        args: {{ $process.command }}
+{{- end }}
+{{- if $process.ports }}
+        ports:
+{{- range $port := $process.ports }}
+        - containerPort: {{ $port.port }}
+{{- end }}
+{{- end }}
+        env:
+        - name: "VERSION"
+          value: {{ required "image.tag is required" $process.image.tag | quote }}
+        - name: "STATSD_HOST"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+{{- range $root.Values.env }}
+        - name: {{ .name | quote }}
+{{- if .value }}
+          value: {{ .value }}
+{{- end }}
+{{- if .secret }}
+          valueFrom:
+            secretKeyRef:
+{{- range $key, $val := .secret }}
+              {{ $key }}: {{ $val }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $process.env }}
+        - name: {{ .name | quote }}
+{{- if .value }}
+          value: {{ .value }}
+{{- end }}
+{{- if .secret }}
+          valueFrom:
+            secretKeyRef:
+{{- range $key, $val := .secret }}
+              {{ $key }}: {{ $val }}
+{{- end }}
+{{- end }}
+{{- end }}
+        resources:
+          requests:
+            memory: {{ required "resources.requests.memory is required" $process.resources.requests.memory | quote }}
+            cpu: {{ required "resources.requests.cpu is required" $process.resources.requests.cpu | quote }}
+{{- if $process.resources.limits }}
+          limits:
+            memory: {{ $process.resources.limits.memory | quote }}
+            cpu: {{ $process.resources.limits.cpu | quote }}
+{{- end }}
+{{- range $port := $process.ports }}
+{{- if $port.health }}
+        livenessProbe:
+          httpGet:
+            path: {{ required "health.path is required" $process.health.path | quote }}
+            port: {{ $port.port }}
+          initialDelaySeconds: {{ required "health.grace is required" $process.health.grace }}
+          periodSeconds: {{ required "health.interval is required" $process.health.interval }}
+          timeoutSeconds: {{ required "health.timeout is required" $process.health.timeout }}
+        readinessProbe:
+          httpGet:
+            path: {{ required "health.path is required" $process.health.path | quote }}
+            port: {{ $port.port }}
+          initialDelaySeconds: {{ required "health.grace is required" $process.health.grace }}
+          periodSeconds: {{ required "health.interval is required" $process.health.interval }}
+          timeoutSeconds: {{ required "health.timeout is required" $process.health.timeout }}
+{{- end }}
+{{- end }}
+---
+{{- end }}

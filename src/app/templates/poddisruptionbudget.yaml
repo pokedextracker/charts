@@ -1,0 +1,18 @@
+{{- $root := . -}}
+{{- range $processName, $process := .Values.processes }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ required "root name is required" $root.Values.name }}-{{ required "process name is required" $processName }}
+  labels:
+    app: {{ required "root name is required" $root.Values.name | quote }}
+    process: {{ required "process name is required" $processName | quote }}
+    release: {{ $root.Release.Name | quote }}
+spec:
+  minAvailable: 50%
+  selector:
+    matchLabels:
+      app: {{ required "root name is required" $root.Values.name | quote }}
+      process: {{ required "process name is required" $processName | quote }}
+---
+{{- end }}

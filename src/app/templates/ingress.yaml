@@ -1,0 +1,33 @@
+{{- $root := . -}}
+{{- range $processName, $process := .Values.processes }}
+{{- range $port := $process.ports }}
+{{- if $port.public }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+{{- range $key, $value := $process.ingress.annotations }}
+    {{ $key }}: {{ $value }}
+{{- end }}
+  name: {{ required "root name is required" $root.Values.name }}-{{ required "process name is required" $processName }}-{{ required "port is required" $port.port }}
+  labels:
+    app: {{ required "root name is required" $root.Values.name | quote }}
+    process: {{ required "process name is required" $processName | quote }}
+    release: {{ $root.Release.Name | quote }}
+spec:
+  tls:
+  - hosts:
+    - {{ $process.ingress.host }}
+  rules:
+  - host: {{ $process.ingress.host }}
+    http:
+      paths:
+      - path: {{ $process.ingress.path }}
+        backend:
+          serviceName: {{ required "root name is required" $root.Values.name }}-{{ required "process name is required" $processName }}-{{ $port.port }}
+          servicePort: {{ $port.port }}
+{{- end }}
+---
+{{- end }}
+{{- end }}

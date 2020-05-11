@@ -1,0 +1,25 @@
+{{- $root := . -}}
+{{- range $processName, $process := .Values.processes }}
+{{- range $port := $process.ports }}
+{{- if $port.public }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ required "root name is required" $root.Values.name }}-{{ required "process name is required" $processName }}-{{ required "port is required" $port.port }}
+  labels:
+    app: {{ required "root name is required" $root.Values.name | quote }}
+    process: {{ required "process name is required" $processName | quote }}
+    release: {{ $root.Release.Name | quote }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ required "root name is required" $root.Values.name | quote }}
+    process: {{ required "process name is required" $processName | quote }}
+    release: {{ $root.Release.Name | quote }}
+  ports:
+  - port: 80
+    targetPort: {{ $port.port }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
