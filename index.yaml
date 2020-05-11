@@ -1,9 +1,19 @@
 apiVersion: v1
 entries:
+  app:
+  - apiVersion: v1
+    appVersion: 0.1.0
+    created: "2020-05-10T22:06:29.069148051-07:00"
+    description: A Chart for a basic app.
+    digest: fc8a0107166d43b8a4620d15378c4dc68aa75ba77eb7233905d626dab20c0c8b
+    name: app
+    urls:
+    - https://pokedextracker.github.io/charts/app-0.1.0.tgz
+    version: 0.1.0
   web-app:
   - apiVersion: v1
     appVersion: 0.1.2
-    created: 2019-05-05T13:55:30.808617-07:00
+    created: "2020-05-10T22:06:29.072084373-07:00"
     description: A Chart for a basic web app.
     digest: 9e3c6a124f914bbc949039613c5f096903222c28a16b1b40e99e0a08403400fa
     name: web-app
@@ -12,7 +22,7 @@ entries:
     version: 0.1.2
   - apiVersion: v1
     appVersion: 0.1.1
-    created: 2019-05-05T13:55:30.808353-07:00
+    created: "2020-05-10T22:06:29.070681084-07:00"
     description: A Chart for a basic web app.
     digest: a470b8a1d1e130446bf927918f51c0b37b2df6735a59624a5d922741751f2eaa
     name: web-app
@@ -21,11 +31,11 @@ entries:
     version: 0.1.1
   - apiVersion: v1
     appVersion: 0.1.0
-    created: 2019-05-05T13:55:30.808073-07:00
+    created: "2020-05-10T22:06:29.070045091-07:00"
     description: A Chart for a basic web app.
     digest: 52164a29be5dd637ee3b29eaeab4c9ebc4d3561d52e8e9d54de0b571da3ffe60
     name: web-app
     urls:
     - https://pokedextracker.github.io/charts/web-app-0.1.0.tgz
     version: 0.1.0
-generated: 2019-05-05T13:55:30.807572-07:00
+generated: "2020-05-10T22:06:29.068691189-07:00"
